@@ -4,12 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node dev/test.js"
+    "test": "node dev/test.js",
+    "start": "nodemon --watch dev -e js dev/api.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "sha256": "^0.2.0"
+    "body-parser": "^1.19.1",
+    "express": "^4.17.2",
+    "nodemon": "^2.0.15",
+    "sha256": "^0.2.0",
+    "uuid": "^8.3.2"
   }
 }
