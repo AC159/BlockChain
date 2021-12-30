@@ -49,6 +49,7 @@ Blockchain.prototype.addTransactionToPendingTransactions = function(transactionO
     return this.getLastBlock()['index']+1;
 }
 
+// currentBlockData consists of index and transactions
 Blockchain.prototype.hashBlock = function(previousBlockHash, currentBlockData, nonce) {
     const dataAsString = previousBlockHash + nonce.toString() + JSON.stringify(currentBlockData);
     return sha256(dataAsString);
@@ -94,6 +95,47 @@ Blockchain.prototype.chainIsValid = function(blockchain) {
     if (!correctNonce || !correctPreviousBlockHash || !correctHash || !correctTransactions) validChain = false;
 
     return validChain;
+}
+
+Blockchain.prototype.getBlock = function(blockHash) {
+    let correctBlock = null;
+    this.chain.forEach(block => {
+       if (block.hash === blockHash) correctBlock = block;
+    });
+    return correctBlock;
+}
+
+Blockchain.prototype.getTransaction = function(transactionId) {
+    let correctTransaction = null;
+    let correctBlock = null;
+    this.chain.forEach(block => {
+        block.transactions.forEach(transaction => {
+            if (transaction.transactionId === transactionId) {
+                correctTransaction = transaction;
+                correctBlock = block;
+            }
+        });
+    });
+    return { transaction: correctTransaction, block: correctBlock };
+}
+
+Blockchain.prototype.getAddressData = function(address) {
+    // Get the total balance of a certain address in the blockchain
+
+    const addressTransactions = [];
+    this.chain.forEach(block => {
+        block.transactions.forEach(transaction => {
+           if (transaction.sender === address || transaction.recipient === address)
+               addressTransactions.push(transaction);
+        });
+    });
+
+    let balance = 0;
+    addressTransactions.forEach(transaction => {
+       if (transaction.recipient === address) balance += transaction.amount;
+       else if (transaction.sender === address) balance -= transaction.amount;
+    });
+    return { addressTransactions, addressBalance: balance };
 }
 
 module.exports = Blockchain;
